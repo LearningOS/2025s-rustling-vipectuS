@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,33 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        self.bubble_up(self.len());
+    }
+
+    fn bubble_up(&mut self, mut idx: usize) {
+        while idx > 1 {
+            let parent = self.parent_idx(idx);
+            if !(self.comparator)(&self.items[idx], &self.items[parent]) {
+                break;
+            }
+
+            self.items.swap(idx, parent);
+            idx = parent;
+        }
+    }
+    
+    fn heapify_down(&mut self, mut idx: usize) {
+        while self.left_child_idx(idx) <= self.len() {
+            let min_child = self.smallest_child_idx(idx);
+            if !(self.comparator)(&self.items[min_child], &self.items[idx]) {
+                break;
+            }
+
+            self.items.swap(idx, min_child);
+            idx = min_child;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +82,14 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+
+        if right > self.len() || (self.comparator)(&self.items[left], &self.items[right]) {
+            left
+        } else {
+            right
+        }
     }
 }
 
@@ -84,9 +115,23 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+
+        let last_idx = self.len();
+        self.items.swap(1, last_idx);
+        let result = self.items.pop();
+        self.count -= 1;
+
+        if self.len() > 0 {
+            self.heapify_down(1);
+        }
+
+        result
     }
+
+    
 }
 
 pub struct MinHeap;
